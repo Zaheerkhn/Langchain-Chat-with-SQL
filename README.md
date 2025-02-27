@@ -20,8 +20,8 @@ Langchain: Chat with SQL is an AI-powered application that allows users to inter
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-username/langchain-chat-sql.git
-cd langchain-chat-sql
+git clone https://github.com/Zaheerkhn/Langchain-Chat-with-SQL
+cd Langchain-Chat-with-SQL
 ```
 
 ### 2️⃣ Create a Virtual Environment (Optional but Recommended)
@@ -63,9 +63,7 @@ streamlit run app.py
 │── 📄 app.py               # Main Streamlit application
 │── 📄 requirements.txt     # Dependencies
 │── 📄 .env                 # Environment variables
-│── 📄 Students.db          # Sample SQLite database
-│── 📂 models/              # (Optional) Custom models or scripts
-└── 📂 assets/              # UI assets (if needed)
+
 ```
 
 ---
@@ -90,5 +88,5 @@ This project is licensed under the **Apache License 2.0**.
 ---
 
 ## 📬 Contact
-For any queries, reach out via [your email or GitHub profile].
+For any queries, reach out via zaheerkhan00457@gmail.com.
 
