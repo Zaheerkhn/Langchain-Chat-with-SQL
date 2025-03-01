@@ -102,7 +102,7 @@ except Exception as e:
     st.stop()
 
 # --- 🔧 Create Agent & Toolkit ---
-toolkit = SQLDatabaseToolkit(db=db, llm=llm)
+toolkit = SQLDatabaseToolkit(db, llm)
 agent = create_sql_agent(llm, toolkit=toolkit, verbose=True, agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION)
 
 # --- 💬 Chat History ---
