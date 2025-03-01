@@ -94,8 +94,7 @@ def configure_db(db_uri, mysql_host=None, mysql_user=None, mysql_password=None, 
 try:
     if db_uri == LOCALDB:
         db = configure_db(db_uri)
-    else:
-        if db_uri == MYSQL and st.sidebar.button("🔗 Connect to MySQL"):
+    elif db_uri == MYSQL and st.sidebar.button("🔗 Connect to MySQL"):
         db = configure_db(db_uri, mysql_host, mysql_user, mysql_password, mysql_database)
         st.sidebar.success("✅ Connected to MySQL database!")
 except Exception as e:
