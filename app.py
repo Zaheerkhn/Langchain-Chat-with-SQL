@@ -1,6 +1,6 @@
 import os
 import sqlite3
-import streamlit as st 
+import streamlit as st
 from dotenv import load_dotenv
 from pathlib import Path
 from langchain.agents import create_sql_agent
@@ -20,7 +20,6 @@ groq_api = os.getenv("GROQ_API_KEY")
 # --- Custom CSS for Dark Chat Styling ---
 st.markdown("""
     <style>
-        /* Custom Chat Bubbles */
         .chat-message {
             padding: 12px;
             border-radius: 8px;
@@ -29,19 +28,17 @@ st.markdown("""
             font-weight: 500;
         }
         .user-message {
-            background-color: #003366;  /* Dark Blue */
+            background-color: #003366;
             text-align: right;
         }
         .assistant-message {
-            background-color: #FF7F50;  /* Coral Orange */
+            background-color: #FF7F50;
             text-align: left;
         }
-        /* Sidebar Styling */
         [data-testid="stSidebar"] {
             background-color: #1e293b;
             color: white;
         }
-        /* Chat Input Box */
         input[type="text"] {
             border-radius: 10px;
         }
@@ -60,44 +57,47 @@ selected_db = st.sidebar.radio("Choose a database:", db_options, index=0)
 LOCALDB = "USE_LOCAL_DB"
 MYSQL = "USE_MYSQL"
 
+# MySQL Configuration Inputs
+mysql_host = None
+mysql_user = None
+mysql_password = None
+mysql_database = None
+db = None
+
 if selected_db == "Select MySQL Database":
     db_uri = MYSQL
     with st.sidebar.expander("🔧 MySQL Configuration"):
-        mysql_host = st.text_input("MySQL Host")
-        mysql_user = st.text_input("MySQL User")
+        mysql_host = st.text_input("MySQL Host", placeholder="e.g., localhost")
+        mysql_user = st.text_input("MySQL User", placeholder="e.g., root")
         mysql_password = st.text_input("MySQL Password", type="password")
-        mysql_database = st.text_input("MySQL Database")
+        mysql_database = st.text_input("MySQL Database", placeholder="e.g., test_db")
+
+    # Add a "Connect" button
+    if st.sidebar.button("🔗 Connect to MySQL"):
+        if not all([mysql_host, mysql_user, mysql_password, mysql_database]):
+            st.sidebar.error("⚠️ Please fill in all MySQL credentials.")
+        else:
+            try:
+                db = SQLDatabase(
+                    create_engine(f"mysql+mysqlconnector://{mysql_user}:{mysql_password}@{mysql_host}/{mysql_database}")
+                )
+                st.sidebar.success(f"✅ Connected to `{mysql_database}` successfully!")
+            except Exception as e:
+                st.sidebar.error(f"❌ Connection failed: {e}")
+
 else:
     db_uri = LOCALDB
+    dbfilepath = Path(__file__).parent / "Students.db"
+    creator = lambda: sqlite3.connect(f"file:{dbfilepath}?mode=ro", uri=True)
+    db = SQLDatabase(create_engine("sqlite:///", creator=creator))
 
-# Error Handling for Database Selection
-if not db_uri:
-    st.error("⚠️ Please select a database and provide necessary details.")
+# Error Handling
+if not db:
+    st.error("⚠️ No database connection established. Please select a database and connect.")
+    st.stop()
 
 # --- 🤖 Initialize LLM ---
 llm = ChatGroq(groq_api_key=groq_api, model_name="Llama-3.3-70b-Versatile", streaming=True)
-
-@st.cache_resource(ttl="2h")
-def configure_db(db_uri, mysql_host=None, mysql_user=None, mysql_password=None, mysql_database=None):
-    if db_uri == LOCALDB:
-        dbfilepath = Path(__file__).parent / "Students.db"
-        creator = lambda: sqlite3.connect(f"file:{dbfilepath}?mode=ro", uri=True)
-        return SQLDatabase(create_engine("sqlite:///", creator=creator))
-    elif db_uri == MYSQL:
-        if not (mysql_host and mysql_user and mysql_password and mysql_database):
-            st.error("⚠️ Please fill in all MySQL credentials.")
-            st.stop()
-        return SQLDatabase(create_engine(f"mysql+mysqlconnector://{mysql_user}:{mysql_password}@{mysql_host}/{mysql_database}"))
-
-# Establish Database Connection
-try:
-    if db_uri == LOCALDB:
-        db = configure_db(db_uri)
-    else:
-        db = configure_db(db_uri, mysql_host, mysql_user, mysql_password, mysql_database)
-except Exception as e:
-    st.error("❌ Error: Please check database credentials and try again.")
-    st.stop()
 
 # --- 🔧 Create Agent & Toolkit ---
 toolkit = SQLDatabaseToolkit(db=db, llm=llm)
@@ -108,7 +108,7 @@ st.sidebar.subheader("💾 Chat History")
 if "messages" not in st.session_state or st.sidebar.button("🗑️ Clear Chat History"):
     st.session_state.messages = [{"role": "assistant", "content": "Hello! How can I assist you today?"}]
 
-# Display chat messages with the new dark-themed UI
+# Display chat messages
 for msg in st.session_state.messages:
     role_class = "user-message" if msg["role"] == "user" else "assistant-message"
     st.markdown(f'<div class="chat-message {role_class}">{msg["content"]}</div>', unsafe_allow_html=True)
