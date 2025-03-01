@@ -95,14 +95,14 @@ try:
     if db_uri == LOCALDB:
         db = configure_db(db_uri)
     elif db_uri == MYSQL and st.sidebar.button("🔗 Connect to MySQL"):
-        db = configure_db(db_uri, mysql_host, mysql_user, mysql_password, mysql_database)
-        st.sidebar.success("✅ Connected to MySQL database!")
+            db = configure_db(db_uri, mysql_host, mysql_user, mysql_password, mysql_database)
+            st.sidebar.success("✅ Connected to MySQL database!")
 except Exception as e:
     st.error("❌ Error: Please check database credentials and try again.")
     st.stop()
 
 # --- 🔧 Create Agent & Toolkit ---
-toolkit = SQLDatabaseToolkit(db, llm)
+toolkit = SQLDatabaseToolkit(db=db, llm=llm)
 agent = create_sql_agent(llm, toolkit=toolkit, verbose=True, agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION)
 
 # --- 💬 Chat History ---
