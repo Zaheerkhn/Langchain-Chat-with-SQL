@@ -87,16 +87,14 @@ def configure_db(db_uri, mysql_host=None, mysql_user=None, mysql_password=None, 
         if not (mysql_host and mysql_user and mysql_password and mysql_database):
             st.error("⚠️ Please fill in all MySQL credentials.")
             st.stop()
-        return SQLDatabase(create_engine(f"mysql+mysqlconnector://{mysql_user}:{mysql_password}@{mysql_host}/{mysql_database}"
-))
+        return SQLDatabase(create_engine(f"mysql+mysqlconnector://{mysql_user}:{mysql_password}@{mysql_host}/{mysql_database}"))
 
 # Establish Database Connection
 try:
     if db_uri == LOCALDB:
         db = configure_db(db_uri)
-    elif db_uri == MYSQL and st.sidebar.button("🔗 Connect to MySQL"):
-            db = configure_db(db_uri, mysql_host, mysql_user, mysql_password, mysql_database)
-            st.sidebar.success("✅ Connected to MySQL database!")
+    else:
+        db = configure_db(db_uri, mysql_host, mysql_user, mysql_password, mysql_database)
 except Exception as e:
     st.error("❌ Error: Please check database credentials and try again.")
     st.stop()
