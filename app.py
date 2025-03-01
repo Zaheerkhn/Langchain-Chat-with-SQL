@@ -87,7 +87,8 @@ def configure_db(db_uri, mysql_host=None, mysql_user=None, mysql_password=None, 
         if not (mysql_host and mysql_user and mysql_password and mysql_database):
             st.error("⚠️ Please fill in all MySQL credentials.")
             st.stop()
-        return SQLDatabase(create_engine(f"mysql+mysqlconnector://{mysql_user}:{mysql_password}@{mysql_host}/{mysql_database}"))
+        return SQLDatabase(create_engine(f"mysql+mysqlconnector://{mysql_user}:{mysql_password}@{mysql_host}:3306/{mysql_database}"
+))
 
 # Establish Database Connection
 try:
