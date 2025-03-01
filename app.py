@@ -16,10 +16,6 @@ os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_PROJECT"] = "Langchain: Chat with SQL"
 groq_api = os.getenv("GROQ_API_KEY")
-mysql_host = st.secrets["MYSQL_HOST"]
-mysql_user = st.secrets["MYSQL_USER"]
-mysql_password = st.secrets["MYSQL_PASSWORD"]
-mysql_database = st.secrets["MYSQL_DATABASE"]
 
 # --- Custom CSS for Dark Chat Styling ---
 st.markdown("""
